@@ -1,9 +1,4 @@
-/*
- * AVRGCC26.c
- *
- * Created: 18-08-2018 12:02:15
- *  Author: HP
- */ 
+
 
 #include <avr/io.h>
 void USART_Init( unsigned int ubrr)
