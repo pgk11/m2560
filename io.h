@@ -180,6 +180,26 @@ unsigned long pulseIn(volatile uint8_t pInno, uint8_t vAlue)
 	}
 	return wIdth;
 }
+void delay(unsigned long mIllisec)
+{
+	int i;
+	for(i=0;i<mIllisec;i++)
+	{
+		_delay_ms(1);
+	}
+	return;
+}
+
+void delayMicroseconds(unsigned long mIcrosec)
+{
+	int i;
+	for(i=0;i<mIcrosec;i++)
+	{
+		_delay_us(1);
+	}
+	return;
+}
+
 
 
 
