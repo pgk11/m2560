@@ -154,7 +154,33 @@ int main(void)
 }
 ISR(TIMER0_OVF_vect)
 {x++;	}	
-	
+unsigned long pulseIn(volatile uint8_t pInno, uint8_t vAlue)
+{
+	TCCR2A = (1 << WGM21) | (1 << COM2A1) | (0 << COM2A0) | (0 << WGM20); //initializing in CTC mode
+	TCCR2B = (1 << CS20)|(1<<FOC2A);
+	unsigned long mAxloops = 500000;
+	unsigned long wIdth = 0;
+	// wait for any previous pulse to end
+	while ( ((PIND)&&(pInno)) == vAlue)
+	{
+		if (--mAxloops == 0)
+		return 0;
+	}
+	// wait for the pulse to start
+	while ( ((PIND)&&(pInno)) != vAlue)
+	{
+		if (--mAxloops == 0)
+		return 0;
+	}
+	// wait for the pulse to stop
+	while ( ((PIND)&&(pInno)) == vAlue)
+	{
+		if (++wIdth == mAxloops)
+		return 0;
+	}
+	return wIdth;
+}
+
 
 
 
