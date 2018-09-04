@@ -106,12 +106,7 @@ long	int i;
 	} 
 
 	}
-	
- * AVRGCC8.c
- *
- * Created: 05-08-2018 14:23:19
- *  Author: HP
- */ 
+
 
 #include <avr/io.h>
 float x=0;
