@@ -108,9 +108,8 @@ long	int i;
 	}
 
 
-#include <avr/io.h>
 float x=0;
-#include <avr/interrupt.h>
+
 int millis()
 {float l;
 	l=x*0.16+0.00000625*TCNT0;
