@@ -10,6 +10,8 @@
 unsigned long pulseIn(volatile uint8_t , uint8_t );
 unsigned long microsecondsToInches(unsigned long );
 unsigned long microsecondsToCentimeters(unsigned long );
+void analogWrite(uint8_t pIn,uint8_t dUtYcY);
+
 
 //Function:
 
