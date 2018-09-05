@@ -7,10 +7,13 @@
 #define F_CPU 16000000UL   //SET CPU CLOCK
 #endif
 //Function declaration
-unsigned long pulseIn(volatile uint8_t , uint8_t );
-unsigned long microsecondsToInches(unsigned long );
-unsigned long microsecondsToCentimeters(unsigned long );
-void analogWrite(uint8_t pIn,uint8_t dUtYcY);
+double pulseIn(volatile uint8_t , uint8_t );
+double microsecondsToInches(unsigned long );
+double microsecondsToCentimeters(unsigned long );
+void analogWrite(uint8_t ,uint8_t );
+uint8_t analogRead(uint8_t);
+void delay(unsigned long);
+void delayMicroseconds(unsigned long);
 
 
 //Function:
@@ -115,7 +118,7 @@ void initADC()
 	ADCSRA=(1<<ADEN)|(1<<ADPS2)|(1<<ADPS1);		//ADC enabled, Prescaler 64
 }
 
-int AnalogRead(int x)
+int analogRead(int PiNNo)
 {
         //prescalar set to default
   	ADMUX=(1<<REFS0)|(0<<REFS1);
