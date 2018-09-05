@@ -1,4 +1,4 @@
-//TODO: Draw Pin Mapping of 2560
+//TODO: RECTIFY THE RETURN TYPES ON FUNCTIONS
 #include <avr/io.h>
 #include <util/delay.h>
 #include <avr/interrupt.h>
@@ -179,7 +179,7 @@ void tinit(void)
         TCNT0=0;
 }
 
-int main(void)
+int main(void)			//WHAT IS THIS?
 {
         tinit();
         DDRB=0b1111111;
