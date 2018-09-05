@@ -130,18 +130,20 @@ int analogRead(int PiNNo)
 	return (ADC);
 }
 
-int analog_write(int x)
-{	
-	//initialize TCCR0 as per requirement, say as follows
-	TCCR0A |= (1<<WGM00)|(1<<COM0A1)|(1<<CS00)|(1<<FOC0A);//initializing timer0
-	TCNT0=0;//initializing timer counter
-	DDRB =0b11111111;
-	//TCCR0 |=(1<<CS11);
-	// make sure to make OC0 pin (pin PB3 for atmega32) as output pin
-	//TCNT0=0;
-	OCR0A=x;//setting pwm pin at duty cycle
-	_delay_ms(5);
+void analogWrite(uint8_t pInNo,uint8_t dUtycY)
+{
+  TCCR1B=(1<<CS11)|(1<<CS10);
+  TCCR1A=(1<<WGM10)|(1<<WGM12)|(1<<COM1A1)|(1<<COM1B1);
+	if(pInNo==1)
+	{
+	  OCR1A=dUtycY;
+	}
+	if(pInNo==2)
+	{
+          OCR1B=dUtycY;
+	}
 }
+
 
 void Dmilli(int j)
 { 
