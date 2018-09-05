@@ -3,8 +3,9 @@
 io.h is the main library containing all the basic functions for ATmega2560 microcontroller
 INDEX:
 1]pulseIn()
+2]LCD
 
-1]PulseIn():
+1]pulseIn():
 
 FUNCTIONS:
 1.	unsigned long pulseIn();
