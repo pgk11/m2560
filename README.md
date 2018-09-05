@@ -85,3 +85,119 @@ while(1) {
   }
 }
 }
+2]LCD:
+
+FUNCTIONS:
+	1.	Lcd8_Init () & Lcd4_Init (): These functions will initialize the 16×2 LCD module connected to the microcontroller
+		pins defined by the following constants.
+	2.	Lcd8_Clear() & Lcd4_Clear() : Calling these functions will clear the 16×2 LCD display screen when interfaced with 
+		8 bit and 4 bit mode respectively.
+	3.	Lcd8_SetCursor() & Lcd4_SetCursor() : These function will set the cursor position on the LCD screen by specifying
+		its row and column. By using these functions we can change the position of character and string displayed by the
+		following functions.
+	4.	Lcd8_WriteChar() & Lcd4_WriteChar() : These functions will write a single character to the LCD screen and the cursor
+		position will be incremented by one.
+	5.	Lcd8_WriteString() & Lcd8_WriteString() : These function will write string or text to the LCD screen and the cursor 
+		positon will be incremented by length of the string plus one.
+	6.	Lcd8_ShiftLeft() & Lcd4_ShiftLeft() : This function will shift data in the LCD display without changing data in the
+		display RAM.
+	7.	Lcd8_ShiftRight() & Lcd8_ShiftRight() : This function will shift data in the LCD display without changing data in the
+		display RAM.
+	8.	For Pin change	
+		•	Change Lcd4_Port(data) and Lcd8_Port(data) to PORTD = data
+		•	Change pinChange(EN,1) to  PORTC |= (1<<PC7)
+		•	Change pinChange(EN,0) to PORTC &= ~(1<<PC7)
+		•	Change pinChange(RS,1) to PORTB |= (1<<PB6)
+		•	Change pinChange(RS,0) to PORTC &= ~(1<<PC6)
+EXAMPLE CODE:
+// Defining pins for LCD
+#define D4 eS_PORTD4
+#define D5 eS_PORTD5
+#define D6 eS_PORTD6
+#define D7 eS_PORTD7
+#define RS eS_PORTC6
+#define EN eS_PORTC7
+//Including standard libs
+#include <avr/io.h>
+#define F_CPU 8000000UL
+#include <util/delay.h>
+#include <avr/interrupt.h>
+#include <stdlib.h>
+#include "lcd.h"
+// Defining pins
+#define trig PB0	//Output pin for sending trigger pulse
+#define echo 2	//Input pin for receiving distance proportional pulse
+
+int time=0;
+
+void set_interrupt()
+{
+	GICR |= (1<<INT0);	//Enable external interrupts
+	MCUCR |= (1<<ISC00); //Trigger interrupt on logical change
+	MCUCR &= ~(1<<ISC01);
+	sei();	//Enable global interrupts or SREG |= (1<<I)
+}
+
+void init_timer()
+{
+	TCCR1B = (1<<CS11); // Initialize timer1 with prescaler of 8
+	TCNT1 = 0;
+}
+
+void trigger()
+{
+	PORTB &= ~(1<<trig);
+	_delay_us(2);
+	PORTB |= (1<<trig);
+	_delay_us(12);
+	PORTB &= ~(1<<trig);
+	_delay_us(2);
+}
+
+ISR(INT0_vect)
+{
+	if(TCNT1 == 0)
+	{
+		init_timer();
+	}
+	else
+	{
+		time = TCNT1;
+		TCNT1 = 0;
+		TCCR1B = 0x00; 
+	}
+}
+
+int main(void)
+{
+	DDRB |= (1<<trig);	//Setting trigger pin as output
+	DDRC |= (0b11100000);	//Setting enable and RS pin as output
+	DDRD &= ~(1<<echo);	//Setting echo pin as input
+	DDRD |= (0b11110000);	//Setting LCD data pins as output
+	set_interrupt();
+	Lcd4_Init();
+	int dist = 0;
+	char a[10];
+    while (1) 
+    {
+		trigger();
+		dist = time/58;
+		itoa(dist, a, 10);
+		if(dist>400)
+		{
+			Lcd4_Set_Cursor(1,1);			
+			Lcd4_Write_String("No object found");
+		}
+		else
+		{
+			Lcd4_Set_Cursor(1,1);
+			Lcd4_Write_String("Distance : ");
+			Lcd4_Write_String(a);
+		}
+		
+		_delay_ms(1000);
+		Lcd4_Clear();
+
+    }
+}
+
