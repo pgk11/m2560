@@ -1,4 +1,3 @@
-//TODO: Draw Pin Mapping of 2560
 #include <avr/io.h>
 #include <util/delay.h>
 #include <avr/interrupt.h>
