@@ -13,7 +13,8 @@ void analogWrite(uint8_t ,uint8_t );
 uint8_t analogRead(uint8_t);
 void delay(unsigned long);
 void delayMicroseconds(unsigned long);
-
+double map(double,double,double,double,double);
+double constrain(double,double,double);
 
 //Function:
 
@@ -214,4 +215,19 @@ void delayMicroseconds(unsigned long mIcrosec)
 		_delay_us(1);
 	}
 	return;
+}
+
+double map(double vAlue, double fromLow, double fromHigh, double toLow, double toHigh)
+{
+	return ((vAlue-fromLow)/abs(fromHigh-fromLow)*abs(toHigh+toLow));
+}
+
+double constrain(double nUm,double uPper,double lOwer)
+{
+	if(nUm<uPper){
+		return uPper;}
+	else if(nUm>lOwer){
+		return lOwer;}
+	else 
+	return nUm;	
 }
