@@ -15,7 +15,8 @@ void delay(unsigned long);
 void delayMicroseconds(unsigned long);
 double map(double,double,double,double,double);
 double constrain(double,double,double);
-
+void attachIntterupt(int, void *,int);
+void (*cAllisr)(void); //function pointer used in ISR()
 //Function:
 
 unsigned long microsecondsToInches(unsigned long mIcroseconds) 
@@ -230,4 +231,190 @@ double constrain(double nUm,double uPper,double lOwer)
 		return lOwer;}
 	else 
 	return nUm;	
+}
+void attachIntterupt(int pIn, void (*iSrfunc)(void), int cOmpare)		//cOmpare:LOW=0,HIGH1,RISING=2,FALLING=3
+{
+	sei();
+	cAllisr=iSrfunc;
+	switch(pIn)	  //enabling interrupt pin
+	{
+		case 0:
+		EIMSK|=1<<INT0;
+		switch(cOmpare){
+			case 2:
+			EICRA|=(1<<ISC00)|(1<<ISC01);
+			break;
+			case 3:
+			EICRA|=(0<<ISC00)|(1<<ISC01);
+			break;
+			case 4:
+			EICRA|=(1<<ISC00)|(0<<ISC01);
+			break;
+			default:
+			EICRA|=(0<<ISC00)|(0<<ISC01);
+		}
+		break;
+
+		case 1:
+		EIMSK|=1<<INT1;
+                switch(cOmpare)
+		{
+			case 2:
+			EICRA|=(1<<ISC10)|(1<<ISC11);
+			break;
+			case 3:
+			EICRA=(0<<ISC10)|(1<<ISC11);
+			break;
+			case 4:
+			EICRA|=(1<<ISC10)|(0<<ISC11);
+			break;
+			default:
+			EICRA|=(0<<ISC10)|(0<<ISC11);
+		}
+		break;
+		
+		case 2:
+		EIMSK|=1<<INT2;
+		switch(cOmpare)
+		{
+			case 2:
+			EICRA|=(1<<ISC20)|(1<<ISC21);
+			break;
+			case 3:
+			EICRA=(0<<ISC20)|(1<<ISC21);
+			break;
+			case 4:
+			EICRA|=(1<<ISC20)|(0<<ISC21);
+			break;
+			default:
+			EICRA|=(0<<ISC20)|(0<<ISC21);
+		}
+		break;
+		
+		case 3:
+		EIMSK|=1<<INT3;
+		switch(cOmpare)
+		{
+			case 2:
+			EICRA|=(1<<ISC30)|(1<<ISC31);
+			break;
+			case 3:
+			EICRA=(0<<ISC30)|(1<<ISC31);
+			break;
+			case 4:
+			EICRA|=(1<<ISC30)|(0<<ISC31);
+			break;
+			default:
+			EICRA|=(0<<ISC30)|(0<<ISC31);
+		}
+		break;
+		
+		case 4:
+		EIMSK|=1<<INT4;
+                switch(cOmpare)
+		{
+			case 2:
+			EICRB|=(1<<ISC40)|(1<<ISC41);
+			break;
+			case 3:
+			EICRB=(0<<ISC40)|(1<<ISC41);
+			break;
+			case 4:
+			EICRB|=(1<<ISC40)|(0<<ISC41);
+			break;
+			default:
+			EICRB|=(0<<ISC40)|(0<<ISC41);
+		}
+		break;
+		
+		case 5:
+		EIMSK|=1<<INT5;
+		switch(cOmpare)
+		{
+			case 2:
+			EICRB|=(1<<ISC50)|(1<<ISC51);
+			break;
+			case 3:
+			EICRB=(0<<ISC50)|(1<<ISC51);
+			break;
+			case 4:
+			EICRB|=(1<<ISC50)|(0<<ISC51);
+			break;
+			default:
+                 	EICRB|=(0<<ISC40)|(0<<ISC41);
+			
+		}
+		break;
+		
+		case 6:
+		EIMSK|=1<<INT6;
+	        switch(cOmpare)
+		{
+			case 2:
+			EICRB|=(1<<ISC60)|(1<<ISC61);
+			break;
+			case 3:
+			EICRB=(0<<ISC60)|(1<<ISC61);
+			break;
+			case 4:
+			EICRB|=(1<<ISC60)|(0<<ISC61);
+			break;
+			default:
+			EICRB|=(0<<ISC60)|(0<<ISC61);
+			
+		}
+		break;
+		
+		case 7:
+		EIMSK|=1<<INT7;
+		switch(cOmpare)
+		{
+			case 2:
+			EICRB|=(1<<ISC70)|(1<<ISC71);
+			break;
+			case 3:
+			EICRB=(0<<ISC70)|(1<<ISC71);
+			break;
+			case 4:
+			EICRB|=(1<<ISC70)|(0<<ISC71);
+			break;
+			default:
+			EICRB|=(0<<ISC70)|(0<<ISC71);
+		}
+		break;
+		
+	        default:EICRA|=(0<<ISC01)|(0<<ISC00);
+	}
+}
+ISR(INT0_vect)
+{
+   cAllisr();
+}
+ISR(INT1_vect)
+{
+   cAllisr();
+}
+ISR(INT2_vect)
+{
+   cAllisr();
+}
+ISR(INT3_vect)
+{
+   cAllisr();
+}
+ISR(INT4_vect)
+{
+    cAllisr();
+}
+ISR(INT5_vect)
+{
+    cAllisr();
+}
+ISR(INT6_vect)
+{
+    cAllisr();
+}
+ISR(INT7_vect)
+{ 
+    cAllisr();
 }
