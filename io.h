@@ -63,56 +63,82 @@ unsigned long pulseIn(volatile uint8_t pInno, uint8_t vAlue)
   return wIdth;
 }
 
-void USART_Init( unsigned int ubrr)
+class Serial
 {
-	/*Set baud rate */
-	UBRR0H = (unsigned char)(ubrr>>8);
-	UBRR0L = (unsigned char)ubrr;
-	/*Enable receiver and transmitter */
-	UCSR0B = (1<<RXEN0)|(1<<TXEN0);
-}
+	public:
+	void start( unsigned int uBrr){
+		/*Set baud rate */
+		UBRR0H = (unsigned char)(uBrr>>8);
+		UBRR0L = (unsigned char)uBrr;
+		/*Enable receiver and transmitter */
+		UCSR0B = (1<<RXEN0)|(1<<TXEN0);
+	}
+	/* Set frame format: 8data, 2stop bit */
+	void send( unsigned char data ){
+		/* Wait for empty transmit buffer */
+		while ( !( UCSR0A & (1<<UDRE0)) )
+		;
+		/* Put data into buffer, sends the data */
+		UDR0 = data;
+		_delay_ms(100);
+	}
+	unsigned char get( void ){
+		/* Wait for data to be received */
+		while ( !(UCSR0A & (1<<RXC0)) )
+		;
+		/* Get and return received data from buffer */
+		return UDR0;
+	}
+	void flush(void){
+		unsigned char dUmmy;
+		while ( UCSR0A & (1<<RXC0) ) dUmmy = UDR0;
+	}
 
-/* Set frame format: 8data, 2stop bit */
-unsigned char USART_Receive0( void )
+	void end(void){
+		flush();
+		UCSR0B&=0xe7;	//disabling RXEN & TXEN
+	}
+
+};
+
+class Serial1
 {
-	/* Wait for data to be received */
-	while ( !(UCSR0A & (1<<RXC0)) );
-	/* Get and return received data from buffer */
-	return UDR0;
-}
+	public:
+	void start( unsigned int uBrr){
+		/*Set baud rate */
+		UBRR1H = (unsigned char)(uBrr>>8);
+		UBRR1L = (unsigned char)uBrr;
+		/*Enable receiver and transmitter */
+		UCSR1B = (1<<RXEN0)|(1<<TXEN0);
+	}
+	/* Set frame format: 8data, 2stop bit */
+	void send( unsigned char data ){
+		/* Wait for empty transmit buffer */
+		while ( !( UCSR1A & (1<<UDRE)) )
+		;
+		/* Put data into buffer, sends the data */
+		UDR1= data;
+		_delay_ms(100);
+	}
+	unsigned char get( void ){
+		/* Wait for data to be received */
+		while ( !(UCSR1A & (1<<RXC1)) )
+		;
+		/* Get and return received data from buffer */
+		return UDR1;
+	}
+	void flush(void){
+		unsigned char dUmmy;
+		while ( UCSR1A & (1<<RXC1) ) dUmmy = UDR1
+		;
+	}
 
-void USART_Transmit0( unsigned char data )
-{
-	/* Wait for empty transmit buffer */
-	while (!(UCSR0A & (1<<UDRE0)))
-	;
-	/* Put data into buffer, sends the data */
-	UDR0 = data;
-	_delay_ms(100);
-	
-	
-}
+	void end(void){
+		flush();
+		UCSR1B&=0xe7;	//disabling RXEN & TXEN
+	}
 
-unsigned char USART_Receive1( void )
-{
-	/* Wait for data to be received */
-	while (!(UCSR1A & (1<<RXC1)));
-	/* Get and return received data from buffer */
-	return UDR1;
-}
-
-void USART_Transmit1( unsigned char data )
-{
-	/* Wait for empty transmit buffer */
-	while ( !( UCSR1A & (1<<UDRE1)) )
-	;
-	/* Put data into buffer, sends the data */
-	UDR1 = data;
-	_delay_ms(100);
-	
-	
-}
-
+};
 void initADC()
 {
 	ADMUX=(1<<REFS0);				//Aref=AVcc
