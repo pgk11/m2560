@@ -1,4 +1,7 @@
+<<<<<<< HEAD
 //TODO: RECTIFY THE RETURN TYPES ON FUNCTIONS
+=======
+>>>>>>> 5d74284eb131f002567145e10f257a41c821fc38
 #include <avr/io.h>
 #include <util/delay.h>
 #include <avr/interrupt.h>
@@ -14,8 +17,10 @@ void analogWrite(uint8_t ,uint8_t );
 uint8_t analogRead(uint8_t);
 void delay(unsigned long);
 void delayMicroseconds(unsigned long);
-
-
+double map(double,double,double,double,double);
+double constrain(double,double,double);
+void attachIntterupt(int, void *,int);
+void (*cAllisr)(void); //function pointer used in ISR()
 //Function:
 
 unsigned long microsecondsToInches(unsigned long mIcroseconds) 
@@ -62,56 +67,82 @@ unsigned long pulseIn(volatile uint8_t pInno, uint8_t vAlue)
   return wIdth;
 }
 
-void USART_Init( unsigned int ubrr)
+class Serial
 {
-	/*Set baud rate */
-	UBRR0H = (unsigned char)(ubrr>>8);
-	UBRR0L = (unsigned char)ubrr;
-	/*Enable receiver and transmitter */
-	UCSR0B = (1<<RXEN0)|(1<<TXEN0);
-}
+	public:
+	void start( unsigned int uBrr){
+		/*Set baud rate */
+		UBRR0H = (unsigned char)(uBrr>>8);
+		UBRR0L = (unsigned char)uBrr;
+		/*Enable receiver and transmitter */
+		UCSR0B = (1<<RXEN0)|(1<<TXEN0);
+	}
+	/* Set frame format: 8data, 2stop bit */
+	void send( unsigned char data ){
+		/* Wait for empty transmit buffer */
+		while ( !( UCSR0A & (1<<UDRE0)) )
+		;
+		/* Put data into buffer, sends the data */
+		UDR0 = data;
+		_delay_ms(100);
+	}
+	unsigned char get( void ){
+		/* Wait for data to be received */
+		while ( !(UCSR0A & (1<<RXC0)) )
+		;
+		/* Get and return received data from buffer */
+		return UDR0;
+	}
+	void flush(void){
+		unsigned char dUmmy;
+		while ( UCSR0A & (1<<RXC0) ) dUmmy = UDR0;
+	}
 
-/* Set frame format: 8data, 2stop bit */
-unsigned char USART_Receive0( void )
+	void end(void){
+		flush();
+		UCSR0B&=0xe7;	//disabling RXEN & TXEN
+	}
+
+};
+
+class Serial1
 {
-	/* Wait for data to be received */
-	while ( !(UCSR0A & (1<<RXC0)) );
-	/* Get and return received data from buffer */
-	return UDR0;
-}
+	public:
+	void start( unsigned int uBrr){
+		/*Set baud rate */
+		UBRR1H = (unsigned char)(uBrr>>8);
+		UBRR1L = (unsigned char)uBrr;
+		/*Enable receiver and transmitter */
+		UCSR1B = (1<<RXEN0)|(1<<TXEN0);
+	}
+	/* Set frame format: 8data, 2stop bit */
+	void send( unsigned char data ){
+		/* Wait for empty transmit buffer */
+		while ( !( UCSR1A & (1<<UDRE)) )
+		;
+		/* Put data into buffer, sends the data */
+		UDR1= data;
+		_delay_ms(100);
+	}
+	unsigned char get( void ){
+		/* Wait for data to be received */
+		while ( !(UCSR1A & (1<<RXC1)) )
+		;
+		/* Get and return received data from buffer */
+		return UDR1;
+	}
+	void flush(void){
+		unsigned char dUmmy;
+		while ( UCSR1A & (1<<RXC1) ) dUmmy = UDR1
+		;
+	}
 
-void USART_Transmit0( unsigned char data )
-{
-	/* Wait for empty transmit buffer */
-	while (!(UCSR0A & (1<<UDRE0)))
-	;
-	/* Put data into buffer, sends the data */
-	UDR0 = data;
-	_delay_ms(100);
-	
-	
-}
+	void end(void){
+		flush();
+		UCSR1B&=0xe7;	//disabling RXEN & TXEN
+	}
 
-unsigned char USART_Receive1( void )
-{
-	/* Wait for data to be received */
-	while (!(UCSR1A & (1<<RXC1)));
-	/* Get and return received data from buffer */
-	return UDR1;
-}
-
-void USART_Transmit1( unsigned char data )
-{
-	/* Wait for empty transmit buffer */
-	while ( !( UCSR1A & (1<<UDRE1)) )
-	;
-	/* Put data into buffer, sends the data */
-	UDR1 = data;
-	_delay_ms(100);
-	
-	
-}
-
+};
 void initADC()
 {
 	ADMUX=(1<<REFS0);				//Aref=AVcc
@@ -215,4 +246,205 @@ void delayMicroseconds(unsigned long mIcrosec)
 		_delay_us(1);
 	}
 	return;
+}
+
+double map(double vAlue, double fromLow, double fromHigh, double toLow, double toHigh)
+{
+	return ((vAlue-fromLow)/abs(fromHigh-fromLow)*abs(toHigh+toLow));
+}
+
+double constrain(double nUm,double uPper,double lOwer)
+{
+	if(nUm<uPper){
+		return uPper;}
+	else if(nUm>lOwer){
+		return lOwer;}
+	else 
+	return nUm;	
+}
+void attachIntterupt(int pIn, void (*iSrfunc)(void), int cOmpare)		//cOmpare:LOW=0,HIGH1,RISING=2,FALLING=3
+{
+	sei();
+	cAllisr=iSrfunc;
+	switch(pIn)	  //enabling interrupt pin
+	{
+		case 0:
+		EIMSK|=1<<INT0;
+		switch(cOmpare){
+			case 2:
+			EICRA|=(1<<ISC00)|(1<<ISC01);
+			break;
+			case 3:
+			EICRA|=(0<<ISC00)|(1<<ISC01);
+			break;
+			case 4:
+			EICRA|=(1<<ISC00)|(0<<ISC01);
+			break;
+			default:
+			EICRA|=(0<<ISC00)|(0<<ISC01);
+		}
+		break;
+
+		case 1:
+		EIMSK|=1<<INT1;
+                switch(cOmpare)
+		{
+			case 2:
+			EICRA|=(1<<ISC10)|(1<<ISC11);
+			break;
+			case 3:
+			EICRA=(0<<ISC10)|(1<<ISC11);
+			break;
+			case 4:
+			EICRA|=(1<<ISC10)|(0<<ISC11);
+			break;
+			default:
+			EICRA|=(0<<ISC10)|(0<<ISC11);
+		}
+		break;
+		
+		case 2:
+		EIMSK|=1<<INT2;
+		switch(cOmpare)
+		{
+			case 2:
+			EICRA|=(1<<ISC20)|(1<<ISC21);
+			break;
+			case 3:
+			EICRA=(0<<ISC20)|(1<<ISC21);
+			break;
+			case 4:
+			EICRA|=(1<<ISC20)|(0<<ISC21);
+			break;
+			default:
+			EICRA|=(0<<ISC20)|(0<<ISC21);
+		}
+		break;
+		
+		case 3:
+		EIMSK|=1<<INT3;
+		switch(cOmpare)
+		{
+			case 2:
+			EICRA|=(1<<ISC30)|(1<<ISC31);
+			break;
+			case 3:
+			EICRA=(0<<ISC30)|(1<<ISC31);
+			break;
+			case 4:
+			EICRA|=(1<<ISC30)|(0<<ISC31);
+			break;
+			default:
+			EICRA|=(0<<ISC30)|(0<<ISC31);
+		}
+		break;
+		
+		case 4:
+		EIMSK|=1<<INT4;
+                switch(cOmpare)
+		{
+			case 2:
+			EICRB|=(1<<ISC40)|(1<<ISC41);
+			break;
+			case 3:
+			EICRB=(0<<ISC40)|(1<<ISC41);
+			break;
+			case 4:
+			EICRB|=(1<<ISC40)|(0<<ISC41);
+			break;
+			default:
+			EICRB|=(0<<ISC40)|(0<<ISC41);
+		}
+		break;
+		
+		case 5:
+		EIMSK|=1<<INT5;
+		switch(cOmpare)
+		{
+			case 2:
+			EICRB|=(1<<ISC50)|(1<<ISC51);
+			break;
+			case 3:
+			EICRB=(0<<ISC50)|(1<<ISC51);
+			break;
+			case 4:
+			EICRB|=(1<<ISC50)|(0<<ISC51);
+			break;
+			default:
+                 	EICRB|=(0<<ISC40)|(0<<ISC41);
+			
+		}
+		break;
+		
+		case 6:
+		EIMSK|=1<<INT6;
+	        switch(cOmpare)
+		{
+			case 2:
+			EICRB|=(1<<ISC60)|(1<<ISC61);
+			break;
+			case 3:
+			EICRB=(0<<ISC60)|(1<<ISC61);
+			break;
+			case 4:
+			EICRB|=(1<<ISC60)|(0<<ISC61);
+			break;
+			default:
+			EICRB|=(0<<ISC60)|(0<<ISC61);
+			
+		}
+		break;
+		
+		case 7:
+		EIMSK|=1<<INT7;
+		switch(cOmpare)
+		{
+			case 2:
+			EICRB|=(1<<ISC70)|(1<<ISC71);
+			break;
+			case 3:
+			EICRB=(0<<ISC70)|(1<<ISC71);
+			break;
+			case 4:
+			EICRB|=(1<<ISC70)|(0<<ISC71);
+			break;
+			default:
+			EICRB|=(0<<ISC70)|(0<<ISC71);
+		}
+		break;
+		
+	        default:EICRA|=(0<<ISC01)|(0<<ISC00);
+	}
+}
+ISR(INT0_vect)
+{
+   cAllisr();
+}
+ISR(INT1_vect)
+{
+   cAllisr();
+}
+ISR(INT2_vect)
+{
+   cAllisr();
+}
+ISR(INT3_vect)
+{
+   cAllisr();
+}
+ISR(INT4_vect)
+{
+    cAllisr();
+}
+ISR(INT5_vect)
+{
+    cAllisr();
+}
+ISR(INT6_vect)
+{
+    cAllisr();
+}
+ISR(INT7_vect)
+{ 
+    cAllisr();
 }
