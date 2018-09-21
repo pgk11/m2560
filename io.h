@@ -449,7 +449,7 @@ int analogRead(int PiNNo)
         //prescalar set to default
   	ADMUX=(1<<REFS0)|(0<<REFS1);
   	ADCSRA|=(1<<ADEN);
-        ADMUX|=x;//chose value from 0 to 7 to chose adc pin accordingly
+        ADMUX|=PiNNo;//chose value from 0 to 7 to chose adc pin accordingly
         ADCSRA|=(1<<ADEN);
         ADCSRA|=(1<<ADSC);
 	while(ADCSRA&(1<<ADSC));
@@ -470,25 +470,6 @@ void analogWrite(uint8_t pInNo,uint8_t dUtycY)
 	}
 }
 
-
-void Dmilli(int j)
-{ 
-	TCCR0A|=(1<<WGM01);
-	TCCR0A|=(1<<CS00);
-	TIMSK0|=(1<<OCIE0A);
-	OCR0A=255;
-	TCNT0=0;
-        long int x=31.50*j;
-        long int i;
-        for(i=0;i<x;i++)
-        {
-	  while(!(TIFR0 & (1 << OCF0A))) 
-          {
-          }
-          TIFR0|=(1<<OCF0A);
-	}
-}
-
 float x=0;
 int millis()
 {
@@ -505,18 +486,6 @@ void tinit(void)
         TCNT0=0;
 }
 
-int main(void)			//WHAT IS THIS?
-{
-        tinit();
-        DDRB=0b1111111;
-	int y;
-	sei();
-	while (1)
-	{
-	 y=millis();
-	 PORTB=y;
- 	} 
-}
 
 ISR(TIMER0_OVF_vect)
 {
