@@ -10,9 +10,6 @@
 
 
 //Function declaration
-double pulseIn(volatile uint8_t , uint8_t );
-double microsecondsToInches(unsigned long );
-double microsecondsToCentimeters(unsigned long );
 void analogWrite(uint8_t ,uint8_t );
 uint8_t analogRead(uint8_t);
 void delay(unsigned long);
@@ -26,8 +23,8 @@ void pinMode(uint8_t , uint8_t );
 static void turnOffPWM(uint8_t );
 void digitalWrite(uint8_t , uint8_t );
 int digitalRead(uint8_t );
-unsigned long int microsecondsToInches();
-unsigned long int microsecondsToCentimeters();
+long unsigned int microsecondsToInches(long unsigned int);
+long unsigned int microsecondsToCentimeters(long unsigned int);
 void setup(void);
 void loop(void);
 //Function:
@@ -321,7 +318,7 @@ const uint8_t PROGMEM digital_pin_to_bit_mask_PGM[] = {
 };
 */
 
-unsigned long int microsecondsToInches(unsigned long mIcroseconds) 
+long unsigned int microsecondsToInches(long unsigned int mIcroseconds) 
 {
   // According to Parallax's datasheet for the PING))), there are 73.746
   // microseconds per inch (i.e. sound travels at 1130 feet per second).
@@ -330,7 +327,7 @@ unsigned long int microsecondsToInches(unsigned long mIcroseconds)
   return (mIcroseconds*0.00669/ 2);
 }
 
-unsigned long int microsecondsToCentimeters(unsigned long microseconds) 
+long unsigned int microsecondsToCentimeters(long unsigned int microseconds) 
 {
   // The speed of sound is 340 m/s or 29 microseconds per centimeter.
   // The ping travels out and back, so to find the distance of the object we
