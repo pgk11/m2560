@@ -1,14 +1,14 @@
-<<<<<<< HEAD
-//TODO: RECTIFY THE RETURN TYPES ON FUNCTIONS
-=======
->>>>>>> 5d74284eb131f002567145e10f257a41c821fc38
 #include <avr/io.h>
-#include <util/delay.h>
-#include <avr/interrupt.h>
-
+#include <stdlib.h>
+#include <math.h>
 #ifndef F_CPU
 #define F_CPU 16000000UL   //SET CPU CLOCK
 #endif
+#include <util/delay.h>
+#include <avr/interrupt.h>
+
+
+
 //Function declaration
 double pulseIn(volatile uint8_t , uint8_t );
 double microsecondsToInches(unsigned long );
@@ -26,10 +26,13 @@ void pinMode(uint8_t , uint8_t );
 static void turnOffPWM(uint8_t );
 void digitalWrite(uint8_t , uint8_t );
 int digitalRead(uint8_t );
-
+unsigned long int microsecondsToInches();
+unsigned long int microsecondsToCentimeters();
+void setup(void);
+void loop(void);
 //Function:
 
-void pinMode(uint8_t pIn, uint8_t mOde)
+/*void pinMode(uint8_t pIn, uint8_t mOde)
 {
 	uint8_t bit = digitalPinToBitMask(pIn);
 	uint8_t port = digitalPinToPort(pIn);
@@ -316,9 +319,9 @@ const uint8_t PROGMEM digital_pin_to_bit_mask_PGM[] = {
 	_BV( 6 )	, // PK 6 ** 68 ** A14	
 	_BV( 7 )	, // PK 7 ** 69 ** A15	
 };
+*/
 
-
-unsigned long microsecondsToInches(unsigned long mIcroseconds) 
+unsigned long int microsecondsToInches(unsigned long mIcroseconds) 
 {
   // According to Parallax's datasheet for the PING))), there are 73.746
   // microseconds per inch (i.e. sound travels at 1130 feet per second).
@@ -327,7 +330,7 @@ unsigned long microsecondsToInches(unsigned long mIcroseconds)
   return (mIcroseconds*0.00669/ 2);
 }
 
-unsigned long microsecondsToCentimeters(unsigned long microseconds) 
+unsigned long int microsecondsToCentimeters(unsigned long microseconds) 
 {
   // The speed of sound is 340 m/s or 29 microseconds per centimeter.
   // The ping travels out and back, so to find the distance of the object we
@@ -711,4 +714,12 @@ ISR(INT6_vect)
 ISR(INT7_vect)
 { 
     cAllisr();
+}
+
+
+int main(){
+	void setup();
+	while(1){
+		void loop();
+	}
 }
