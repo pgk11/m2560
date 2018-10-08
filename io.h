@@ -413,7 +413,7 @@ class Serial1
 	/* Set frame format: 8data, 2stop bit */
 	void send( unsigned char data ){
 		/* Wait for empty transmit buffer */
-		while ( !( UCSR1A & (1<<UDRE)) )
+		while ( !( UCSR1A & (1<<UDRE1)) )
 		;
 		/* Put data into buffer, sends the data */
 		UDR1= data;
