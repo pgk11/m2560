@@ -1,0 +1,68 @@
+#include <avr/io.h>
+
+int l;
+int c[64]={1,2,3,4,5,6,7,8,1,2,3,4,5,6,7,8,1,2,3,4,5,6,7,8,1,2,3,4,5,6,7,8,1,2,3,4,5,6,7,8,1,2,3,4,5,6,7,8,1,2,3,4,5,6,7,8,1,2,3,4,5,6,7,8};
+
+char d[64]={'d','d','d','d','d','d','d','d','b','b','b','b','b','b','b','b','c','c','c','c','c','c','c','c','e','e','e','e','e','e','e','e','f','f','f','f','f','f','f','f','g','g','g','g','g','g','g','g','h','h','h','h','h','h','h','h','j','j',j','j','j','j','j','j'};
+void pinMode(unsigned int i,int tipe)
+{
+  if(tipe==0)
+        { switch(d[i])
+         {
+	 
+	          case'b':
+	                  DDRB|=(0<<c[i]);
+			           break;
+	          case'c':
+	                 DDRC|=(0<<c[i]);
+			          break;
+	          case'd':
+	                 DDRD|=(0<<c[i]);
+			          break;
+            case'e':
+	                 DDRE|=(0<<c[i]);
+			          break;
+            case'f':
+	                 DDRF|=(0<<c[i]);
+			          break;
+            case'g':
+	                 DDRG|=(0<<c[i]);
+			          break;
+            case'h':
+	                 DDRH|=(0<<c[i]);
+			          break;
+            case'j':
+	                 DDRJ|=(0<<c[i]);
+			          break;
+            
+	     }  }
+	else{          switch(d[i])
+         {
+	 
+	          case'b':
+	                  DDRB|=(1<<c[i]);
+			           break;
+	          case'c':
+	                 DDRC|=(1<<c[i]);
+			          break;
+	          case'd':
+	                 DDRD|=(1<<c[i]);
+			          break;
+            case'e':
+	                 DDRE|=(01<c[i]);
+			          break;
+            case'f':
+	                 DDRF|=(1<<c[i]);
+			          break;
+            case'g':
+	                 DDRG|=(1<<c[i]);
+			          break;
+            case'h':
+	                 DDRH|=(1<<c[i]);
+			          break;
+            case'j':
+	                 DDRJ|=(1<<c[i]);
+			          break;	  		 		 			 
+	     }  
+}
+		 }
